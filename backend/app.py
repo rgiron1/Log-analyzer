@@ -2,11 +2,14 @@ from flask import Flask
 from upload import upload_bp
 from analyze import analyze_bp
 from dotenv import load_dotenv
-import os 
+import os
+import logging 
 
 #file path to store uploaded files
 UPLOAD_FOLDER = r'C:\Users\rgiro\Log-analyzer\backend\uploadedFiles'
 
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 load_dotenv()
