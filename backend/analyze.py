@@ -1,10 +1,8 @@
 import os
 from flask import Flask, Blueprint, jsonify, current_app
-from flask_cors import CORS
 import logging
 
 app = Flask(__name__)
-CORS(app) 
 analyze_bp = Blueprint('analyze', __name__)
 logger = logging.getLogger(__name__)
 

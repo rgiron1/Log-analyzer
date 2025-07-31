@@ -1,14 +1,14 @@
 import os
+import uuid
+from datetime import datetime, timezone
 from flask import Flask, Blueprint, flash, jsonify, request, redirect, current_app
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
-from flask_cors import CORS
 import logging
 
 ALLOWED_EXTENSIONS = {'txt', 'log'} #allowed file extensions
 
 app = Flask(__name__)
-CORS(app) 
 upload_bp = Blueprint('upload', __name__)
 logger = logging.getLogger(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 #16MB limit for file uploads
@@ -19,9 +19,6 @@ def allowed_file(filename): #check if the file has an allowed extension
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def check_if_name_exists(filename):#check if a file with the same name already exists in the upload folder
-    logger.info("Checking if file already exist: %s", filename)
-    return os.path.exists(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_file_too_large(e):
@@ -45,15 +42,24 @@ def upload_file():
         return jsonify({"success": False, "error": "No selected file"}), 400
     
     if file and allowed_file(file.filename):
-        if check_if_name_exists(file.filename):
-            flash('File with this name already exists. Please rename the file and try again.')
-            logger.error("File with this name already exists: %s", file.filename)
-            return jsonify({"success": False, "error": "File with this name already exists. Please rename the file and try again."}), 400
-        filename = secure_filename(file.filename)
+        orginal_filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(orginal_filename)
+        unique_id = str(uuid.uuid4())[:8]  # Generate a unique ID
+        filename = f"{name}_{unique_id}{ext}"  # Append unique ID to the filename
         file.save(os.path.join(upload_folder, filename))
+        filesize_bytes = len(file.read())  # Get the size of the file
+        upload_time = datetime.now(timezone.utc).isoformat()  # Get the current time
+        file_metadata = {
+            "success":True,
+            "file_id": unique_id,
+            "saved_filename": filename,
+            "original_filename": orginal_filename,
+            "file_size": filesize_bytes,
+            "upload_time": upload_time,
+            "extension": ext}
         flash(f"File {filename} uploaded successfully!")
         logger.info("File has been successfully uploaded!")
-        return jsonify({"success": True, "filename": filename}), 201
+        return jsonify(file_metadata), 201
     
     flash('File type not allowed. Please upload a .txt or .log file.')
     logger.error("File type not allowed: %s", file.filename)
