@@ -1,5 +1,6 @@
 import os
 from flask import Flask, Blueprint, jsonify, current_app
+from flask_jwt_extended import jwt_required
 import logging
 import csv
 from collections import defaultdict, OrderedDict
@@ -17,6 +18,7 @@ analyze_bp = Blueprint('analyze', __name__)
 
 
 @analyze_bp.route("/analyze/<filename>", methods=["GET"])
+@jwt_required()
 def analyze_file(filename):
     upload_folder = current_app.config['UPLOAD_FOLDER'] #file path to store uploaded files
     filepath = os.path.join(upload_folder, filename)

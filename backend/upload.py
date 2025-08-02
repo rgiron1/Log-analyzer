@@ -2,6 +2,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 from flask import Flask, Blueprint, flash, jsonify, request, redirect, current_app
+from flask_jwt_extended import jwt_required
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
 import logging
@@ -27,6 +28,7 @@ def handle_file_too_large(e):
     return jsonify({"success": False, "error": "File too large"}), 400
 
 @upload_bp.route("/upload", methods=["POST"])
+@jwt_required()
 def upload_file():
     upload_folder = current_app.config['UPLOAD_FOLDER']
     if 'file' not in request.files: #if no file part in the request
@@ -66,6 +68,7 @@ def upload_file():
     return jsonify({"success": False, "error": "File type not allowed, please upload a .txt or .log file"}), 400
 
 @upload_bp.route("/upload/<filename>", methods=["GET"])
+@jwt_required()
 def get_uploaded_file(filename):
     # if not allowed_file(filename):
     #     return jsonify({"success": False, "error": "File type not allowed"}), 400

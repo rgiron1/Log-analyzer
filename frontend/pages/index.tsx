@@ -1,7 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import SummaryTable from '../components/summaryTable';
 
 export default function Home() {
+    const router = useRouter();
+    // Check if user is authenticated
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+        }
+    }, [router]);
     const [file, setFile] = useState<File | null>(null);//use state to manage file input to ensure UI updates correctly
     const [uploadStatus, setUploadStatus] = useState('');
     const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -22,9 +31,13 @@ export default function Home() {
         formData.append('file', file);
 
         try {
+            const token = localStorage.getItem('token');
             const res = await fetch('http://127.0.0.1:5000/upload', {// make the POST request to the backend
                 method: 'POST',
-                body: formData,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData
             });
             const contentType = res.headers.get("Content-Type") || "";
             let data: any = {};
@@ -49,7 +62,12 @@ export default function Home() {
 
     const fetchAnalysis = async (filename: string) => {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/analyze/${filename}`);
+            const token = localStorage.getItem('token');
+            const res = await fetch(`http://127.0.0.1:5000/analyze/${filename}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             const data = await res.json();
             setAnalysisResult(data);
         } catch (err) {
