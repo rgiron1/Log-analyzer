@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SummaryTable from '../components/summaryTable';
 
 export default function Home() {
     const [file, setFile] = useState<File | null>(null);//use state to manage file input to ensure UI updates correctly
@@ -50,36 +51,31 @@ export default function Home() {
         try {
             const res = await fetch(`http://127.0.0.1:5000/analyze/${filename}`);
             const data = await res.json();
-            if (data.success) {
-                setAnalysisResult(data);
-            } else {
-                setUploadStatus(`Error analyzing file: ${data.error}`);
-            }
-
+            setAnalysisResult(data);
         } catch (err) {
             console.error(err);
+            setUploadStatus('Analysis failed.');
         }
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={{ padding: '2rem', maxWidth: '100%', boxSizing: 'border-box' }}>
             <h1>Log File Analyzer</h1>
 
-            <input type="file" accept=".txt,.log" onChange={handleFileChange} />
-            <button onClick={handleUpload}>Upload</button>
+            <input type="file" accept=".txt,.log,.csv" onChange={handleFileChange} />
+            <button disabled={!file} onClick={handleUpload}>Upload</button>
 
             <p>{uploadStatus}</p>
 
-            {analysisResult && analysisResult.success && (
+            {analysisResult?.summary && analysisResult?.summary.timeline && (
                 <div>
-                    <h2>Analysis</h2>
-                    <p>Total lines: {analysisResult.total_lines}</p>
-                    <h3>Preview:</h3>
-                    <pre>
-                        {analysisResult.preview.map((line: string, idx: number) => (
-                            <div key={idx}>{line}</div>
-                        ))}
-                    </pre>
+                    <h2>Analysis Summary</h2>
+                    <p>Total entries: {analysisResult.summary.total_entries}</p>
+                    <p>High risk entries: {analysisResult.summary.high_risk_count}</p>
+                    <p>Critical risk entries: {analysisResult.summary.critical_risk_count}</p>
+
+                    <h3>Timeline of Events</h3>
+                    <SummaryTable data={analysisResult.summary.timeline} />
                 </div>
             )}
         </div>

@@ -1,0 +1,47 @@
+.timeline-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    border: 3px solid black;
+}
+
+.timeline-table th,
+.timeline-table td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+.timeline-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.timeline-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-container {
+    max-height: 25rem;
+    overflow-y: auto;
+    width: 100%;
+    border: 2px solid #ccc;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+    .timeline-table {
+        font-size: 0.8rem;
+        display: block;
+        overflow-x: auto;
+    }
+
+    .timeline-table th,
+    .timeline-table td {
+        padding: 5px;
+        font-size: 0.8rem;
+    }
+}

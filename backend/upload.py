@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
 import logging
 
-ALLOWED_EXTENSIONS = {'txt', 'log'} #allowed file extensions
+ALLOWED_EXTENSIONS = {'txt', 'log', 'csv'} #allowed file extensions
 
 app = Flask(__name__)
 upload_bp = Blueprint('upload', __name__)

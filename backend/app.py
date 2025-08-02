@@ -7,17 +7,18 @@ import os
 import logging 
 
 app = Flask(__name__)
-CORS(app) 
-#file path to store uploaded files
-UPLOAD_FOLDER = r'C:\Users\rgiro\Log-analyzer\backend\uploadedFiles'
-
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 load_dotenv()
+
+UPLOAD_FOLDER = r'C:\Users\rgiro\Log-analyzer\backend\uploadedFiles'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.getenv('SECRET_KEY')
+
+# Register blueprints first
 app.register_blueprint(upload_bp)
 app.register_blueprint(analyze_bp)
+
+# Then apply CORS after blueprints are registered
+CORS(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
