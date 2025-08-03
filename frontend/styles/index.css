@@ -1,47 +1,53 @@
-.timeline-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
-    font-size: 0.95rem;
-    border: 3px solid black;
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
 }
 
-.timeline-table th,
-.timeline-table td {
-    border: 1px solid black;
-    padding: 10px;
+.loginBox {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.title {
     text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #333;
 }
 
-.timeline-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+.input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
 }
 
-.timeline-table tr:hover {
-    background-color: #f1f1f1;
+.button {
+    background-color: #0070f3;
+    color: white;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
-.table-container {
-    max-height: 25rem;
-    overflow-y: auto;
-    width: 100%;
-    border: 2px solid #ccc;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
-    .timeline-table {
-        font-size: 0.8rem;
-        display: block;
-        overflow-x: auto;
-    }
-
-    .timeline-table th,
-    .timeline-table td {
-        padding: 5px;
-        font-size: 0.8rem;
-    }
+.error {
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
 }

@@ -4,16 +4,42 @@ import SummaryTable from '../components/summaryTable';
 
 export default function Home() {
     const router = useRouter();
-    // Check if user is authenticated
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            router.push('/login');
-        }
-    }, [router]);
+    const [Token, setToken] = useState([]); // just to delay render
+
     const [file, setFile] = useState<File | null>(null);//use state to manage file input to ensure UI updates correctly
     const [uploadStatus, setUploadStatus] = useState('');
     const [analysisResult, setAnalysisResult] = useState<any>(null);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                router.push('/login');
+                return;
+            }
+
+            try {
+                const res = await fetch('http://127.0.0.1:5000/verifyJWT', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!res.ok) throw new Error('Invalid token');
+
+            } catch (err) {
+                localStorage.removeItem('token'); // cleanup
+                router.push('/login');
+            }
+        };
+
+        checkAuth();
+    }, [router]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        router.push('/login');
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {// Check if files are selected
@@ -78,6 +104,7 @@ export default function Home() {
 
     return (
         <div style={{ padding: '2rem', maxWidth: '100%', boxSizing: 'border-box' }}>
+            <button onClick={handleLogout} style={{ marginBottom: '1rem' }}>Logout</button>
             <h1>Log File Analyzer</h1>
 
             <input type="file" accept=".txt,.log,.csv" onChange={handleFileChange} />
@@ -92,7 +119,6 @@ export default function Home() {
                     <p>High risk entries: {analysisResult.summary.high_risk_count}</p>
                     <p>Critical risk entries: {analysisResult.summary.critical_risk_count}</p>
 
-                    <h3>Timeline of Events</h3>
                     <SummaryTable data={analysisResult.summary.timeline} />
                 </div>
             )}
