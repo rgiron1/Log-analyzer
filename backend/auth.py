@@ -19,11 +19,11 @@ def verify_token():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get("username")
+    username = data.get("username").lower()
     password = data.get("password")
 
     if username not in users or not check_password_hash(users[username], password):
         return jsonify({"msg": "Invalid credentials"}), 401
 
-    token = create_access_token(identity=username, expires_delta=timedelta(hours=.25))  # Token expires in 15 minutes
+    token = create_access_token(identity=username, expires_delta=timedelta(minutes=15))  # Token expires in 15 minutes
     return jsonify(access_token=token)

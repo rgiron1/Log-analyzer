@@ -15,7 +15,8 @@ app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # use env var in product
 JWTManager(app)
 app.register_blueprint(auth_bp)
 
-UPLOAD_FOLDER = r'C:\Users\rgiro\Log-analyzer\backend\uploadedFiles'
+UPLOAD_FOLDER = '/app/uploadedFiles'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Register blueprints first
@@ -26,4 +27,4 @@ app.register_blueprint(analyze_bp)
 CORS(app)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)

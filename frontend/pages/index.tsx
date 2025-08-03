@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import AnalysisSummary from '../components/analysisSummary';
 import FileUploader from '../components/fileUploader';
@@ -8,8 +8,12 @@ export default function Home() {
     const router = useRouter();
     const [uploadStatus, setUploadStatus] = useState('');
     const [analysisResult, setAnalysisResult] = useState<any>(null);
+    const backendUrl =
+        typeof window === "undefined"
+            ? "http://backend:5000" // SSR (inside Docker)
+            : "http://localhost:5000"; // browser (outside Docker)
 
-    const checkAuth = async () => {
+    const checkAuth = useCallback(async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             router.push('/login');
@@ -17,23 +21,23 @@ export default function Home() {
         }
 
         try {
-            const res = await fetch('http://127.0.0.1:5000/verifyJWT', {
+            console.log('Checking authentication...');
+            const res = await fetch(`${backendUrl}/verifyJWT`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
             if (!res.ok) throw new Error('Invalid token');
-
         } catch (err) {
-            localStorage.removeItem('token'); // cleanup
+            localStorage.removeItem('token');
             router.push('/login');
         }
-    };
+    }, [router]);
 
     useEffect(() => {
         checkAuth();
-    }, [router]);
+    }, [checkAuth]);
 
     const handleUpload = async (file: File) => {
 
@@ -42,7 +46,7 @@ export default function Home() {
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch('http://127.0.0.1:5000/upload', {// make the POST request to the backend
+            const res = await fetch(`${backendUrl}/upload`, {// make the POST request to the backend
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -76,7 +80,7 @@ export default function Home() {
     const fetchAnalysis = async (filename: string) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`http://127.0.0.1:5000/analyze/${filename}`, {
+            const res = await fetch(`${backendUrl}/analyze/${filename}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -39,7 +39,6 @@ def upload_file():
     file = request.files['file']
     
     if file.filename == '': #if no file is selected
-        flash('No selected file')
         logger.error("No selected file")
         return jsonify({"success": False, "error": "No selected file"}), 400
     
@@ -59,7 +58,6 @@ def upload_file():
             "file_size": filesize_bytes,
             "upload_time": upload_time,
             "extension": ext}
-        flash(f"File {filename} uploaded successfully!")
         logger.info("File has been successfully uploaded!")
         return jsonify(file_metadata), 201
     

@@ -7,12 +7,16 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
+    const backendUrl =
+        typeof window === "undefined"
+            ? "http://backend:5000" // SSR (inside Docker)
+            : "http://localhost:5000"; // browser (outside Docker)
 
     const handleLogin = async () => {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:5000/login', {
+            const res = await fetch(`${backendUrl}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
