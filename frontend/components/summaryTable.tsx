@@ -35,7 +35,7 @@ const columns: TableColumn<timeLineEntry>[] = [
     { name: "Method", selector: row => row.method, sortable: true },
     { name: "Response", selector: row => row.response_code, sortable: true },
     { name: "IP", selector: row => row.ip_address, sortable: true },
-    { name: "Req Size", selector: row => row.request_size.toString(), sortable: true },
+    { name: "Req Size(Bytes)", selector: row => row.request_size.toString(), sortable: true },
 ];
 
 const SummaryTable: React.FC<Props> = ({ data }) => {
