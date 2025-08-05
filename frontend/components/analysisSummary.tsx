@@ -12,6 +12,7 @@ const AnalysisSummary: React.FC<Props> = ({ summary }) => {
             <p>Total entries: {summary.total_entries}</p>
             <p>High risk entries: {summary.high_risk_count}</p>
             <p>Critical risk entries: {summary.critical_risk_count}</p>
+            <p>Average request size: {summary.average_request_size.toFixed(2)} bytes</p>
 
             <SummaryTable data={summary.timeline} />
         </div>

@@ -8,6 +8,7 @@ services:
       - ./uploadedFiles:/app/uploadedFiles
     environment:
       - FLASK_ENV=development
+      - IN_DOCKER=true
 
   frontend:
     build: ./frontend

@@ -3,8 +3,7 @@ from flask import Flask, Blueprint, jsonify, current_app
 from flask_jwt_extended import jwt_required
 import logging
 import csv
-from collections import defaultdict, OrderedDict
-
+from detect import run_model_on_logs
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,6 +30,7 @@ def analyze_file(filename):
         "total_entries": 0,
         "high_risk_count": 0,
         "critical_risk_count": 0,
+        "average_request_size": 0,
         "top_urls": {},
         "top_users": {},
         "timeline": []
@@ -41,7 +41,6 @@ def analyze_file(filename):
         for row in reader:
             table_data.append(row)
             summary['total_entries'] += 1
-            logger.info("Processing row: %s", row)
 
             severity = row.get("threatseverity", "None")
             timestamp = row.get("timestamp", "unknown")
@@ -52,6 +51,9 @@ def analyze_file(filename):
             respcode = row.get("respcode", "unknown")
             ipAddress = row.get("cpubip", "unknown")
             request_size = row.get("reqsize", "0")
+            uaclasses = row.get("uaclass", "unknown")
+            actions = row.get("action", "unknown")
+            activity = row.get("activity", "unknown")
 
             # Count high and critical risk entries
             if severity == "High":
@@ -68,7 +70,10 @@ def analyze_file(filename):
                 "method": method,
                 "response_code": respcode,
                 "ip_address": ipAddress,
-                "request_size": request_size
+                "reqsize": request_size,
+                "uaclass": uaclasses,
+                "actions": actions,
+                "activity": activity
             })
 
             # Top URLs
@@ -79,11 +84,25 @@ def analyze_file(filename):
             summary["top_users"].setdefault(user, 0)
             summary["top_users"][user] += 1
 
+            # Calculate average request size
+            request_size = float(request_size)
+            if request_size > 0:  # Avoid division by zero
+                summary["average_request_size"] += request_size
+
         # Sort top URLs and users by count
+        if summary["total_entries"] > 0:
+            summary["average_request_size"] /= summary["total_entries"]
+        else:
+            summary["average_request_size"] = 0
         logger.info("Sorting top URLs and users and Timeline")
         summary["top_urls"] = dict(sorted(summary["top_urls"].items(), key=lambda item: item[1], reverse=True))
         summary["top_users"] = dict(sorted(summary["top_users"].items(), key=lambda item: item[1], reverse=True))
         summary["timeline"].sort(key=lambda x: x["timestamp"])
+        anomalies, scores, confidence = run_model_on_logs(summary["timeline"])
+        for i, entry in enumerate(summary["timeline"]):
+            entry["anomaly"] = bool(anomalies[i])
+            entry["confidence_score"] = round(confidence[i], 4)
+            entry["model_score"] = round(scores[i], 4)
             
 
 

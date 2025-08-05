@@ -15,9 +15,19 @@ app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # use env var in product
 JWTManager(app)
 app.register_blueprint(auth_bp)
 
-UPLOAD_FOLDER = '/app/uploadedFiles'
+# Check if running in Docker
+IN_DOCKER = os.getenv("IN_DOCKER") == "true"
+
+# Set upload folder based on environment
+if IN_DOCKER:
+    UPLOAD_FOLDER = "/app/uploads"
+else:
+    UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploadedFiles")
+
+# Ensure the folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 # Register blueprints first
 app.register_blueprint(upload_bp)
