@@ -46,7 +46,9 @@ npm run dev
 
 ## Docker Setup (Recommended)
 
+```bash
 docker-compose up --build
+```
 
 In Both Docker and Local deployment, uploaded files will be saved in <Log_Analyzer>/uploadedFolders
 
