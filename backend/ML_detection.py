@@ -58,17 +58,7 @@ def preprocess(rows):
     return np.array(X), valid_indices
 
 def run_model_on_logs(log_rows):
-    """
-    Train and run IsolationForest anomaly detection on current batch of logs.
 
-    Parameters:
-        log_rows: List[dict] - raw log entries
-
-    Returns:
-        anomalies: List[bool] indicating if entry is anomalous
-        scores: List[float] anomaly score (decision function)
-        confidence: List[float] normalized score [0,1] where 1 = most confident
-    """
     X, valid_indices = preprocess(log_rows)
 
     if len(X) == 0:

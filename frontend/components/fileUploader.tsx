@@ -28,7 +28,7 @@ const FileUploader: React.FC<Props> = ({ onUpload }) => {
             <input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt,.log,.csv"
+                accept=".log,.csv"
                 onChange={handleFileChange}
             />
             <button onClick={handleClick} disabled={!selectedFile} className="btn">

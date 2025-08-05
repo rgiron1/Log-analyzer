@@ -3,7 +3,7 @@ from flask import Flask, Blueprint, jsonify, current_app
 from flask_jwt_extended import jwt_required
 import logging
 import csv
-from detect import run_model_on_logs
+from ML_detection import run_model_on_logs
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,7 +19,7 @@ analyze_bp = Blueprint('analyze', __name__)
 @analyze_bp.route("/analyze/<filename>", methods=["GET"])
 @jwt_required()
 def analyze_file(filename):
-    upload_folder = current_app.config['UPLOAD_FOLDER'] #file path to store uploaded files
+    upload_folder = current_app.config['UPLOAD_FOLDER'] #File path to store uploaded files
     filepath = os.path.join(upload_folder, filename)
     if not os.path.exists(filepath):
         logger.error("File not found: %s", filepath)
@@ -55,7 +55,6 @@ def analyze_file(filename):
             actions = row.get("action", "unknown")
             activity = row.get("activity", "unknown")
 
-            # Count high and critical risk entries
             if severity == "High":
                 summary["high_risk_count"] += 1
             elif severity == "Critical":

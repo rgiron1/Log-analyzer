@@ -41,12 +41,12 @@ export default function Home() {
 
     const handleUpload = async (file: File) => {
 
-        const formData = new FormData();//set up form data to send file
+        const formData = new FormData();//Set up form data to send file
         formData.append('file', file);
 
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${backendUrl}/upload`, {// make the POST request to the backend
+            const res = await fetch(`${backendUrl}/upload`, {// Make the POST request to the backend
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -54,19 +54,19 @@ export default function Home() {
                 body: formData
             });
             if (res.status === 401) {
-                return checkAuth(); // recheck auth if unauthorized
+                return checkAuth(); // Recheck auth if unauthorized
             }
             const contentType = res.headers.get("Content-Type") || "";
             let data: any = {};
 
-            if (contentType.includes("application/json")) {//ensure we are getting JSON response
+            if (contentType.includes("application/json")) {//Ensure we are getting JSON response
                 data = await res.json();
             } else {
-                throw new Error("Invalid server response.");//if not JSON, throw error
+                throw new Error("Invalid server response.");//If not JSON, throw error
             }
 
             if (res.ok && data.success) {
-                setUploadStatus(`Upload successful: ${data.saved_filename}`);//set the status to success
+                setUploadStatus(`Upload successful: ${data.saved_filename}`);//Set the status to success
                 fetchAnalysis(data.saved_filename);
             } else {
                 setUploadStatus(`Upload failed: ${data.error || "Unknown error."}`);
@@ -86,7 +86,7 @@ export default function Home() {
                 },
             });
             if (res.status === 401) {
-                return checkAuth(); // recheck auth if unauthorized
+                return checkAuth(); // Recheck auth if unauthorized
             }
             const data = await res.json();
             setAnalysisResult(data);

@@ -5,13 +5,13 @@ from datetime import timedelta
 
 auth_bp = Blueprint('auth', __name__)
 
-#in a production environment, you would store these securely, e.g., in a database
-#for this example, I use a simple dictionary to simulate user storage
+# In a production environment, you would store these securely, e.g., in a database
+# For this example, I use a simple dictionary to simulate user storage
 users = {
     "admin": generate_password_hash("Welcome1"),
 }
 
-@auth_bp.route("/verifyJWT", methods=["GET"])# check if the JWT is valid
+@auth_bp.route("/verifyJWT", methods=["GET"])# Check if the JWT is valid
 @jwt_required()
 def verify_token():
     return jsonify({"valid": True}), 200

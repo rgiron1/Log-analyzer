@@ -7,15 +7,15 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
 import logging
 
-ALLOWED_EXTENSIONS = {'txt', 'log', 'csv'} #allowed file extensions
+ALLOWED_EXTENSIONS = {'log', 'csv'} # Allowed file extensions
 
 app = Flask(__name__)
 upload_bp = Blueprint('upload', __name__)
 logger = logging.getLogger(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 #16MB limit for file uploads
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000 # 16MB limit for file uploads
 
 
-def allowed_file(filename): #check if the file has an allowed extension
+def allowed_file(filename): # Check if the file has an allowed extension
     logger.info("Checking if file is allowed: %s", filename)
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -31,14 +31,14 @@ def handle_file_too_large(e):
 @jwt_required()
 def upload_file():
     upload_folder = current_app.config['UPLOAD_FOLDER']
-    if 'file' not in request.files: #if no file part in the request
+    if 'file' not in request.files: # If no file part in the request
         flash('No file part')
         logger.error("No file part in the request")
         return jsonify({"success": False, "error": "No file part"}), 400
     
     file = request.files['file']
     
-    if file.filename == '': #if no file is selected
+    if file.filename == '': # If no file is selected
         logger.error("No selected file")
         return jsonify({"success": False, "error": "No selected file"}), 400
     
@@ -68,8 +68,6 @@ def upload_file():
 @upload_bp.route("/upload/<filename>", methods=["GET"])
 @jwt_required()
 def get_uploaded_file(filename):
-    # if not allowed_file(filename):
-    #     return jsonify({"success": False, "error": "File type not allowed"}), 400
     
     file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
     if not os.path.exists(file_path):
