@@ -59,7 +59,7 @@ For anomaly detection in log files, this project uses an **Isolation Forest** mo
 
 ### Why Isolation Forest?
 
-Isolation Forest is designed to detect outliers by isolating anomalies rather than modeling normal data. It's well-suited for our case, where the vast majority of log entries are normal, and anomalies are rare.
+Isolation Forest is designed to detect outliers by isolating anomalies rather than modeling normal data. It's well-suited for our case, where the vast majority of log entries are normal, and anomalies are more rare.
 
 ### How It Works
 
@@ -71,11 +71,9 @@ Isolation Forest is designed to detect outliers by isolating anomalies rather th
 
 ### Feature Set
 
-We train the model using only clean (normal) logs. The feature set includes:
-
 - `request_size`: The size of the request (numerical)
-- `action_type`: The type of action (e.g., `"buy"`, `"sell"`, `"upload"`, `"download"`)
-- `client_type`: The client source (e.g., `"browser"`, `"curl"`)
+- `action`: The type of action (e.g., `"buy"`, `"sell"`, `"upload"`, `"download"`)
+- `uaclass`: The client source (e.g., `"browser"`, `"curl"`)
 
 ### Example Anomaly Detection
 
@@ -86,6 +84,19 @@ A log entry may be flagged as anomalous if it has:
 - A client type like `"curl"`
 
 Such a combination is unusual compared to regular traffic (e.g., small `buy/sell` requests from a browser), so the model assigns it a **higher anomaly score**.
+
+The ML implemention is in the ML_detection File where we first preprocces the data to fit the model. Some features in our set are strings like action and uaclass are strings and not numerical values so we need to convert to numerical value using sklearn's `LabelEncoder()`.
+My model is set up in the following way
+```python 
+model = IsolationForest(
+        n_estimators=100,
+        contamination=0.2,
+        random_state=42
+    )
+```
+`n_estimators` is the number of isolation trees that will be created and split. Depending on the number of entries in the dataset we may want to incerease/decrease the number of trees. Typically increaseing will improve accuracy but decrease preformance but there is also a danger of overfitting
+`contamination` is the percentage of how many anomolies we expect to be in the data. In a production model we would remove this parameters as we would use some saved training data
+`random_state` is to keep reproducability based on the data set to get a consistant output on the same data set. In a production model we would remove this parameter as well 
 
 ---
 
