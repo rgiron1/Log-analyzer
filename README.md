@@ -36,6 +36,13 @@ If no env variables are set up then it will default to a set up key for needed k
 flask run
 
 ```
+## Potential issues with Flask install:
+There is an issue where is your env is missing some C extentions needed. If flask won't install correctly please try to use a conda env
+```bash
+conda create -n flask-env python=3.10
+conda activate flask-env
+pip install -r requirements.txt
+```
 
 ### FrontEnd
 ```bash
